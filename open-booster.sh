@@ -2,7 +2,7 @@
 
 source "$SCRIPTS/bash-colors.sh"
 
-BEARER=$(cat ./bearer.secret)
+BEARER=$(cat ./data/bearer.secret)
 PACK_ID=$1
 
 if [ -z "$PACK_ID" ]; then
@@ -35,8 +35,4 @@ res=$(echo "$res" \
     | sed "s| rare| \\${FG_BLUE}Rare\\${COL_RESET}|g")
 
 echo -e "$res"
-
-money=$(bash ./get-me.sh | jq '.user.berrys')
-
 echo -e "${FG_RED}<<<===<<<ooo<<<[[{0}]]>>>ooo>>>===>>>${COL_RESET}"
-echo -e "Berrys: ${FG_YELLOW}$money 🪙${COL_RESET}"

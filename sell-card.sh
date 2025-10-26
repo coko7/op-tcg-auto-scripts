@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BEARER=$(cat ./bearer.secret)
+BEARER=$(cat ./data/bearer.secret)
 CARD_ID=$1
 QUANTITY=$2
 
