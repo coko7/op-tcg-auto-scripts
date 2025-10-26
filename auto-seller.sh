@@ -16,6 +16,7 @@ data=$(jq -c '
         map(
             . + {sell_price: (
                 if .rarity == "common" then 10
+                elif .rarity == "uncommon" then 25
                 elif .rarity == "rare" then 50
                 elif .rarity == "leader" then 100
                 elif .rarity == "super_rare" then 150
