@@ -4,9 +4,9 @@
 
 source "$SCRIPTS/bash-colors.sh"
 
-WAIT=9
+WAIT=18
 
-echo "OP-TCG AutoSeller" | figlet | lolcat
+echo "OP-TCG Auto Seller" | figlet | lolcat
 
 gum spin --title="🔐 User auto-login..." -- bash login.sh
 gum spin --title="⬇️ Fetching collection..." -- bash ./fetch-collection.sh > data/collection.json
@@ -29,7 +29,7 @@ data=$(jq -c '
             .rarity == "rare" or
             .rarity == "leader"))
         | map(select(.quantity > 2))
-        | sort_by(.quantity * .sell_price) | reverse
+        | sort_by((.quantity - 1) * .sell_price) | reverse
     ) | .data
 ' data/collection.json)
 
@@ -48,9 +48,14 @@ echo "$data" | jq -c '.[]' | while read -r card; do
     res=$(gum spin --title="Selling $to_sell copies..." -- bash sell-card.sh "$card_id" "$to_sell")
     success=$(echo "$res" | jq -r '.success')
     if [ "$success" != "true" ]; then
-        echo "$res"
-        exit 1
+        echo -e "${FG_RED}$res${COL_RESET}"
+        if ! gum spin --title="🔐 Try user auto-login again..." -- bash login.sh; then
+            exit 1
+        fi
+        echo "skipping this card sell..."
+        continue;
     fi
+
     earned=$(echo "$res" | jq -r '.data.berrys_earned')
     new_balance=$(echo "$res" | jq -r '.data.new_balance')
 
