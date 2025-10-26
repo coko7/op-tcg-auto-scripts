@@ -2,7 +2,7 @@
 
 # antiCheatMiddleware('sell_card', { maxPerMinute: 20, maxPerHour: 200, minDelay: 500 }),
 
-source "$SCRIPTS/bash-colors.sh"
+source "bash-colors.sh"
 
 WAIT=18
 
@@ -27,14 +27,21 @@ data=$(jq -c '
             .rarity == "common" or
             .rarity == "uncommon" or
             .rarity == "rare" or
+            .rarity == "super_rare" or
             .rarity == "leader"))
-        | map(select(.quantity > 2))
+        | map(select(((.quantity - 1) * .sell_price) > 10))
         | sort_by((.quantity - 1) * .sell_price) | reverse
     ) | .data
 ' data/collection.json)
 
+iteration=1
+
 echo "✨ Selling cards:"
 echo "$data" | jq -c '.[]' | while read -r card; do
+    if [ $((iteration % 20)) -eq 0 ]; then
+        gum spin --title="🔐 User auto-login refresh..." -- bash login.sh
+    fi
+
     card_id=$(echo "$card" | jq -r '.card_id')
     name=$(echo "$card" | jq -r '.name')
     rarity=$(echo "$card" | jq -r '.rarity')
@@ -60,4 +67,5 @@ echo "$data" | jq -c '.[]' | while read -r card; do
     new_balance=$(echo "$res" | jq -r '.data.new_balance')
 
     echo -e "↳ sold $to_sell copies ${FG_YELLOW}+${earned} 🪙${COL_RESET} => ${FG_YELLOW}$new_balance${COL_RESET} 💰"
+    ((iteration++))
 done;

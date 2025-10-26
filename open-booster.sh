@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$SCRIPTS/bash-colors.sh"
+source "bash-colors.sh"
 
 BEARER=$(cat ./data/bearer.secret)
 PACK_ID=$1

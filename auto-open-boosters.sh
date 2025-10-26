@@ -2,11 +2,13 @@
 
 # antiCheatMiddleware('open_booster', { maxPerMinute: 10, maxPerHour: 100, minDelay: 1000 }),
 
-source "$SCRIPTS/bash-colors.sh"
+source "bash-colors.sh"
 
 WAIT=36
 
-PACK_ID=569301 # 16 secret
+# PACK_ID=569301 # PRB-01
+# PACK_ID=569302 # PRB-02
+PACK_ID=569109 # OP-09
 # PACK_ID=569111 # Divine fist - 5 secret
 
 echo "OP-TCG Auto OpenBooster" | figlet | lolcat
@@ -17,13 +19,13 @@ money=$(bash get-me.sh | jq '.user.berrys')
 
 while true; do
     gum spin --title="Waiting $WAIT seconds..." -- sleep ${WAIT}s
+    if [ $((opening % 20)) -eq 0 ]; then
+        gum spin --title="🔐 User auto-login refresh..." -- bash login.sh
+    fi
 
     echo "🎁 OPEN #$opening >>>"
     if ! gum spin --title="Opening booster $PACK_ID..." --show-output -- bash open-booster.sh $PACK_ID; then
-        if ! gum spin --title="🔐 Try user auto-login again..." -- bash login.sh; then
-            exit 1
-        fi
-        continue;
+        exit 1
     fi
 
     ((opening++))
