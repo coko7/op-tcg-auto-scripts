@@ -4,7 +4,12 @@
 
 source "bash-colors.sh"
 
-WAIT=18
+WAIT_LONG=18 # 3600 / 200 (because limit is 200 sell actions per hour)
+WAIT_MEDIUM=3 # 60 / 20 (because limit is 20 sell actions per minute)
+WAIT_LOW=1 # because you have to wait at least 0.5s between each sell (and i am lazy to convert all that shit to ms).
+
+WAIT=$WAIT_LONG
+BEARER_EXPIRY=$((60 * 12)) # = 12 mins. Technically expires after 15 minutes but we invalidate early
 
 echo "OP-TCG Auto Seller" | figlet | lolcat
 
@@ -38,7 +43,7 @@ iteration=1
 
 echo "✨ Selling cards:"
 echo "$data" | jq -c '.[]' | while read -r card; do
-    if [ $((iteration % 20)) -eq 0 ]; then
+    if [ $((iteration * WAIT)) -gt $BEARER_EXPIRY ]; then
         gum spin --title="🔐 User auto-login refresh..." -- bash login.sh
     fi
 

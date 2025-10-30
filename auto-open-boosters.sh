@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
-# antiCheatMiddleware('open_booster', { maxPerMinute: 10, maxPerHour: 100, minDelay: 1000 }),
+# antiCheatMiddleware('buy_booster', { maxPerMinute: 5, maxPerHour: 50, minDelay: 2000 }),
 
 source "bash-colors.sh"
 
-WAIT=36
+WAIT_LONG=72 # 3600 / 50 (because limit is 50 packs per hour)
+WAIT_MEDIUM=12 # 60 / 5 (because limit is 5 packs per minute)
+WAIT_LOW=2 # because you have to wait at least 2s between each opening
 
-# PACK_ID=569301 # PRB-01
-# PACK_ID=569302 # PRB-02
-PACK_ID=569109 # OP-09
-# PACK_ID=569111 # Divine fist - 5 secret
+WAIT=$WAIT_LONG
+BEARER_EXPIRY=$((60 * 12)) # = 12 mins. Technically expires after 15 minutes but we invalidate early
+
+PACK_ID=569201 # 2 🌟 0 / 17 ⭐ 0 EXTRA BOOSTER -MEMORIAL COLLECTION- [EB-01] => 80
 
 echo "OP-TCG Auto OpenBooster" | figlet | lolcat
 gum spin --title="🔐 User auto-login..." -- bash login.sh
@@ -17,9 +19,10 @@ gum spin --title="🔐 User auto-login..." -- bash login.sh
 opening=1
 money=$(bash get-me.sh | jq '.user.berrys')
 
+echo "✨ Opening boosters for pack: $PACK_ID"
 while true; do
     gum spin --title="Waiting $WAIT seconds..." -- sleep ${WAIT}s
-    if [ $((opening % 20)) -eq 0 ]; then
+    if [ $((opening * WAIT)) -gt $BEARER_EXPIRY ]; then
         gum spin --title="🔐 User auto-login refresh..." -- bash login.sh
     fi
 
