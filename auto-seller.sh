@@ -34,8 +34,8 @@ data=$(jq -c '
             .rarity == "rare" or
             .rarity == "super_rare" or
             .rarity == "leader"))
-        | map(select(((.quantity - 1) * .sell_price) > 10))
-        | sort_by((.quantity - 1) * .sell_price) | reverse
+        | map(select(((.quantity - 2) * .sell_price) > 10))
+        | sort_by((.quantity - 2) * .sell_price) | reverse
     ) | .data
 ' data/collection.json)
 
@@ -52,7 +52,7 @@ echo "$data" | jq -c '.[]' | while read -r card; do
     rarity=$(echo "$card" | jq -r '.rarity')
     quantity=$(echo "$card" | jq -r '.quantity')
 
-    to_sell=$((quantity - 1))
+    to_sell=$((quantity - 2))
     echo -e "Selling: ${FG_BLUE}$name ×$to_sell${COL_RESET} $rarity (${FG_RED}$card_id${COL_RESET})"
 
     gum spin --title="Waiting $WAIT seconds..." -- sleep ${WAIT}s

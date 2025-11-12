@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-all_achievements=$(bash get-achievements.sh)
+all_achievements=$(bash users/jq-achievements.sh)
 
 [ -z "$1" ] && echo "error: expects a booster ID to be passed" && exit 1
 

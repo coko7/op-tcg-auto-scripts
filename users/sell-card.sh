@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-BEARER=$(cat ./data/bearer.secret)
+source load-env.sh
+
 CARD_ID=$1
 QUANTITY=$2
 
@@ -9,11 +10,9 @@ if [ -z "$CARD_ID" ]; then
     exit 1
 fi
 
-if [ -z "$QUANTITY" ]; then
-    QUANTITY=1
-fi
+[[ -z "$QUANTITY" ]] && QUANTITY=1
 
-curl 'https://backend-optcg.polo2409.work/api/users/sell-card' \
+curl "$OPBG_HOST/api/users/sell-card" \
     --compressed --silent -X POST \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer $BEARER" \

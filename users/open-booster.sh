@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-source "bash-colors.sh"
+source load-env.sh
+source bash-colors.sh
 
-BEARER=$(cat ./data/bearer.secret)
 PACK_ID=$1
 
 if [ -z "$PACK_ID" ]; then
@@ -27,7 +27,7 @@ function print_separator() {
     echo -e "${FG_RED}<<<===<<<ooo<<<[[{0}]]>>>ooo>>>===>>>${COL_RESET}"
 }
 
-res=$(curl 'https://backend-optcg.polo2409.work/api/users/buy-booster' \
+res=$(curl "$OPBG_HOST/api/users/buy-booster" \
   --compressed --silent -X POST \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $BEARER" \

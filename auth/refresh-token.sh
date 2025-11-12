@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-BEARER=$(cat ./data/bearer.secret)
-REFRESH_TOKEN=$(cat ./data/refresh.secret)
+source load-env.sh
 
-curl 'https://backend-optcg.polo2409.work/api/auth/refresh' \
+REFRESH_TOKEN=$(cat data/refresh.secret)
+
+curl "$OPBG_HOST/api/auth/refresh" \
     --compressed --silent -X POST \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer $BEARER" \
