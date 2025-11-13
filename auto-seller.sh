@@ -2,7 +2,8 @@
 
 # antiCheatMiddleware('sell_card', { maxPerMinute: 20, maxPerHour: 200, minDelay: 500 }),
 
-source "bash-colors.sh"
+source load-env.sh
+source bash-colors.sh
 
 WAIT_LONG=18 # 3600 / 200 (because limit is 200 sell actions per hour)
 WAIT_MEDIUM=3 # 60 / 20 (because limit is 20 sell actions per minute)
@@ -13,8 +14,8 @@ BEARER_EXPIRY=$((60 * 12)) # = 12 mins. Technically expires after 15 minutes but
 
 echo "OP-TCG Auto Seller" | figlet | lolcat
 
-gum spin --title="🔐 User auto-login..." -- bash login.sh
-gum spin --title="⬇️ Fetching collection..." -- bash ./fetch-collection.sh > data/collection.json
+gum spin --title="🔐 User auto-login..." -- bash auth/login.sh
+gum spin --title="⬇️ Fetching collection..." -- bash users/jq-collection.sh > data/collection.json
 
 data=$(jq -c '
     .data |= (
@@ -44,7 +45,7 @@ iteration=1
 echo "✨ Selling cards:"
 echo "$data" | jq -c '.[]' | while read -r card; do
     if [ $((iteration * WAIT)) -gt $BEARER_EXPIRY ]; then
-        gum spin --title="🔐 User auto-login refresh..." -- bash login.sh
+        gum spin --title="🔐 User auto-login refresh..." -- bash auth/login.sh
     fi
 
     card_id=$(echo "$card" | jq -r '.card_id')
@@ -57,11 +58,11 @@ echo "$data" | jq -c '.[]' | while read -r card; do
 
     gum spin --title="Waiting $WAIT seconds..." -- sleep ${WAIT}s
 
-    res=$(gum spin --title="Selling $to_sell copies..." -- bash sell-card.sh "$card_id" "$to_sell")
+    res=$(gum spin --title="Selling $to_sell copies..." -- bash users/sell-card.sh "$card_id" "$to_sell")
     success=$(echo "$res" | jq -r '.success')
     if [ "$success" != "true" ]; then
         echo -e "${FG_RED}$res${COL_RESET}"
-        if ! gum spin --title="🔐 Try user auto-login again..." -- bash login.sh; then
+        if ! gum spin --title="🔐 Try user auto-login again..." -- bash auth/login.sh; then
             exit 1
         fi
         echo "skipping this card sell..."
