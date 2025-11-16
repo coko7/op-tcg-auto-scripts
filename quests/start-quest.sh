@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-bash load-env.sh
+source load-env.sh
 
 BEARER=$(cat data/bearer.secret)
 QUEST_ID=$1
