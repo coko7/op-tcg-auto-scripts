@@ -13,4 +13,5 @@ echo "$res" | jq -c '.[]' | while read -r quest; do
     quest_id=$(echo "$quest" | jq -r '.quest_id')
     echo "Claiming quest: $quest_id ($id)"
     bash quests/complete-quest.sh "$id"
+    echo ""
 done
