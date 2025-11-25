@@ -13,6 +13,8 @@ WAIT_LOW=2 # because you have to wait at least 2s between each opening
 WAIT=$WAIT_LONG
 BEARER_EXPIRY=$((60 * 12)) # = 12 mins. Technically expires after 15 minutes but we invalidate early
 
+SOUND_DIR="/usr/share/sounds/freedesktop/stereo"
+
 echo "OP-TCG Auto OpenBooster" | figlet | lolcat
 gum spin --title="🔐 User auto-login..." -- bash auth/login.sh
 
@@ -23,6 +25,11 @@ echo "✨ Opening boosters for pack: $PACK_ID"
 while true; do
     if (( money < 500 )); then
         echo "Less than 500 🪙 - Exiting 👋"
+        notify-send -u critical "System" \
+            "👒 op-tcg-auto-open finished ✅" \
+            -i "$HOME/Pictures/Memes/y-u-no.jpg" \
+            -h string:x-canonical-private-synchronous:op-tcg-open-alert \
+        && paplay "$SOUND_DIR/complete.oga"
         exit 0
     fi
 
